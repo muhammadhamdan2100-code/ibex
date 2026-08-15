@@ -1,0 +1,469 @@
+@import "../styles/tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    border-color: rgba(246, 246, 244, 0.1);
+  }
+
+  html {
+    scroll-behavior: auto; /* Lenis takes over smooth scrolling in Phase 2 */
+    -webkit-text-size-adjust: 100%;
+    color-scheme: dark; /* tells the browser every native form control (text colour, autofill, date/select pickers, scrollbars) should render for a dark UI, not assume light */
+  }
+
+  body {
+    @apply bg-matte-black text-white font-body antialiased relative;
+    background-image:
+      radial-gradient(120% 80% at 50% -10%, rgba(74, 78, 84, 0.25) 0%, transparent 60%),
+      linear-gradient(180deg, var(--color-matte-black) 0%, var(--color-graphite) 100%);
+    background-attachment: fixed;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: var(--bg-noise-opacity);
+    mix-blend-mode: overlay;
+    background-repeat: repeat;
+    background-size: 220px 220px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  body > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display text-white;
+  }
+
+  ::selection {
+    background-color: var(--color-gold-500);
+    color: var(--color-matte-black);
+  }
+
+  /* Keyboard-visible focus state — never removed for mouse users, only
+     restyled. Accessibility checklist item. */
+  :focus-visible {
+    outline: 2px solid var(--color-gold-500);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+  }
+
+  /*
+   * Unconditional form-control text fix. Every text input on the site
+   * already sets `text-white` via its own className, but that's a
+   * component-level patch — this rule guarantees readable input text
+   * (and a visible caret) at the element level regardless of any
+   * Tailwind-specificity edge case, and specifically neutralizes the
+   * classic "black text on autofill" bug (Chrome/Edge force black text +
+   * a light yellow/blue background on autofilled fields unless the
+   * `-webkit-autofill` pseudo-class is explicitly overridden).
+   */
+  input,
+  textarea,
+  select {
+    color: var(--color-white);
+    caret-color: var(--color-white);
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill {
+    -webkit-text-fill-color: var(--color-white);
+    -webkit-box-shadow: 0 0 0px 1000px var(--color-graphite) inset;
+    box-shadow: 0 0 0px 1000px var(--color-graphite) inset;
+    transition: background-color 9999s ease-in-out 0s;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-matte-black);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-steel-grey);
+    border-radius: var(--radius-pill);
+  }
+}
+
+@layer components {
+  /*
+   * Animated conic-gradient border for the "premium" Button variant.
+   * Uses a registered @property so the browser can tween the custom
+   * angle property directly (no JS needed for the rotation itself).
+   */
+  @property --angle {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+  }
+
+  @keyframes border-spin {
+    to {
+      --angle: 360deg;
+    }
+  }
+
+  .btn-gradient-border {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .btn-gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: inherit;
+    padding: 1px;
+    pointer-events: none;
+    background: conic-gradient(
+      from var(--angle),
+      transparent 0%,
+      var(--color-gold-500) 15%,
+      var(--color-cyan-500) 30%,
+      transparent 50%,
+      transparent 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: border-spin 3s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-gradient-border::before {
+      animation: none;
+    }
+  }
+
+
+  /*
+   * Layered background system.
+   * Every non-transparent Section tone is composed of:
+   *   1. a base linear gradient (matte-black <-> graphite <-> institutional
+   *      green, depending on tone)
+   *   2. one or two soft radial "glow" accents using the secondary/accent
+   *      hues (cyan, electric blue, magenta, gold) at very low opacity —
+   *      texture, not decoration
+   *   3. a shared fractal-noise overlay (see .bg-noise below) for a
+   *      brushed, non-flat surface
+   * Tones are selected via `data-tone` (set by <Section tone="..." />)
+   * rather than a class, so the multi-layer background-image declarations
+   * stay out of Tailwind's arbitrary-value strings.
+   */
+  [data-tone="black"] {
+    background-color: var(--color-matte-black);
+    background-image:
+      radial-gradient(100% 60% at 85% 0%, rgba(214, 49, 122, 0.07) 0%, transparent 60%),
+      radial-gradient(120% 60% at 0% 100%, rgba(46, 107, 255, 0.06) 0%, transparent 60%),
+      linear-gradient(180deg, var(--color-graphite) 0%, var(--color-matte-black) 100%);
+  }
+
+  [data-tone="graphite"] {
+    background-color: var(--color-graphite);
+    background-image:
+      radial-gradient(100% 60% at 85% 0%, rgba(214, 49, 122, 0.07) 0%, transparent 60%),
+      radial-gradient(120% 60% at 0% 100%, rgba(46, 107, 255, 0.06) 0%, transparent 60%),
+      linear-gradient(180deg, var(--color-graphite) 0%, var(--color-matte-black) 100%);
+  }
+
+  [data-tone="green"] {
+    background-color: var(--color-green-900);
+    background-image:
+      radial-gradient(100% 60% at 50% 0%, rgba(201, 162, 75, 0.1) 0%, transparent 60%),
+      linear-gradient(180deg, var(--color-green-900) 0%, var(--color-matte-black) 100%);
+  }
+
+  /*
+   * Hero atmosphere: dark steel/graphite base with soft cyan + magenta
+   * glows (never a flat/generic gradient) plus a faint engineering
+   * blueprint grid, for a "volumetric" industrial-premium feel without
+   * requiring a real fog/volumetric-lighting render pass yet.
+   */
+  [data-tone="hero"] {
+    background-color: var(--color-matte-black);
+    background-image:
+      radial-gradient(70% 55% at 22% 20%, rgba(34, 211, 232, 0.14) 0%, transparent 65%),
+      radial-gradient(65% 55% at 82% 78%, rgba(214, 49, 122, 0.12) 0%, transparent 65%),
+      radial-gradient(120% 70% at 50% 100%, rgba(74, 78, 84, 0.35) 0%, transparent 70%),
+      linear-gradient(180deg, var(--color-matte-black) 0%, var(--color-graphite) 55%, var(--color-matte-black) 100%);
+  }
+
+  .bg-blueprint-grid {
+    position: relative;
+  }
+
+  .bg-blueprint-grid::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image:
+      linear-gradient(rgba(246, 246, 244, 0.6) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(246, 246, 244, 0.6) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(80% 80% at 50% 40%, #000 0%, transparent 100%);
+    -webkit-mask-image: radial-gradient(80% 80% at 50% 40%, #000 0%, transparent 100%);
+  }
+
+  /* Shared fractal-noise overlay — applied via .bg-noise, kept subtle (see --bg-noise-opacity). */
+  .bg-noise {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .bg-noise::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: var(--bg-noise-opacity);
+    mix-blend-mode: overlay;
+    background-repeat: repeat;
+    background-size: 220px 220px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Ensures real content always paints above the noise pseudo-element without every consumer needing z-index utilities. */
+  .bg-noise > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+@layer utilities {
+  .marquee-track {
+    animation: marquee var(--marquee-duration, 28s) linear infinite;
+  }
+  .marquee-track-reverse {
+    animation: marquee-reverse var(--marquee-duration, 28s) linear infinite;
+  }
+  .marquee-viewport:hover .marquee-track,
+  .marquee-viewport:hover .marquee-track-reverse {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes marquee-reverse {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track,
+    .marquee-track-reverse {
+      animation: none;
+    }
+  }
+
+  /*
+   * Loading-screen animation set. Uses SVG's `pathLength="1"` normalization
+   * (set directly on each shape in Loader.tsx) so a single stroke-draw
+   * keyframe works uniformly across rects/circles without hand-computing
+   * each shape's actual perimeter.
+   */
+  .loader-draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: loader-draw 1.1s var(--ease-standard) forwards;
+  }
+  .loader-draw-delay-1 {
+    animation-delay: 0.15s;
+  }
+  .loader-draw-delay-2 {
+    animation-delay: 0.3s;
+  }
+  @keyframes loader-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .loader-sweep {
+    animation: loader-sweep 2.2s ease-in-out infinite;
+  }
+  @keyframes loader-sweep {
+    0% {
+      transform: translateX(-120%);
+      opacity: 0;
+    }
+    15% {
+      opacity: 1;
+    }
+    50% {
+      transform: translateX(120%);
+      opacity: 1;
+    }
+    65%,
+    100% {
+      transform: translateX(120%);
+      opacity: 0;
+    }
+  }
+
+  .loader-headlight {
+    animation: loader-headlight-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes loader-headlight-pulse {
+    0%,
+    100% {
+      opacity: 0.45;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .loader-progress-track {
+    position: relative;
+    overflow: hidden;
+  }
+  .loader-progress-fill {
+    position: absolute;
+    inset: 0;
+    width: 40%;
+    background: var(--gradient-gold);
+    animation: loader-progress 1.4s ease-in-out infinite;
+  }
+  @keyframes loader-progress {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(350%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .loader-draw {
+      animation: none;
+      stroke-dashoffset: 0;
+    }
+    .loader-sweep {
+      animation: none;
+      opacity: 0;
+    }
+    .loader-headlight {
+      animation: none;
+      opacity: 0.85;
+    }
+    .loader-progress-fill {
+      animation: none;
+      width: 100%;
+    }
+  }
+
+  /* Hero stage-title fade-in — remounted (via React `key`) on every stage change. */
+  .stage-title-enter {
+    animation: stage-title-enter var(--duration-slow) var(--ease-enter) both;
+  }
+  @keyframes stage-title-enter {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stage-title-enter {
+      animation: none;
+    }
+  }
+
+  .glass {
+    background-color: var(--glass-card);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .text-gradient-gold {
+    background-image: var(--gradient-gold);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .eyebrow {
+    @apply font-mono text-xs uppercase tracking-widest text-gold-500;
+  }
+
+  /*
+   * Premium IBEX Logo Shine Effect Animations
+   * 
+   * Subtle CSS-based animations that add illumination to the transparent logo
+   * without changing its design or colors. The effects are lightweight and
+   * performant, using only CSS gradients and transforms.
+   */
+
+  /* Slow, smooth sweep animation for the logo shine */
+  @keyframes logo-shine {
+    0% {
+      transform: translateX(-150%) skewX(-15deg);
+    }
+    20% {
+      opacity: 0;
+    }
+    40% {
+      opacity: 0.3;
+    }
+    60% {
+      opacity: 0.15;
+    }
+    80% {
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(150%) skewX(-15deg);
+    }
+  }
+
+  /* Apply the animation to elements with the class */
+  .animate-logo-shine {
+    animation: logo-shine 6s ease-in-out infinite;
+  }
+
+  /* Soft inner glow effect for premium feel */
+  .bg-inner-glow {
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
+  }
+
+  /* Reduced motion preference - disable animations for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-logo-shine {
+      animation: none;
+    }
+  }
+}
