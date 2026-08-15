@@ -1,0 +1,136 @@
+/**
+ * Runtime CSS custom properties — mirrors config/theme.ts.
+ * Keep both files in sync manually; theme.ts is the source of truth for
+ * TypeScript/JS consumers (GSAP, Three.js, R3F), tokens.css is the source
+ * for pure-CSS/Tailwind consumers.
+ */
+
+:root {
+  /* Primary */
+  --color-matte-black: #0a0a0b;
+  --color-graphite: #16171a;
+  --color-steel-grey: #4a4e54;
+  --color-steel-grey-light: #8b8f94;
+
+  /* Support */
+  --color-white: #f6f6f4;
+  --color-light-grey: #c7c9cc;
+
+  /* Secondary — futuristic engineering accents (use sparingly) */
+  --color-cyan-100: #b8f2f7;
+  --color-cyan-300: #6fe1ec;
+  --color-cyan-500: #22d3e8;
+  --color-cyan-700: #158c99;
+  --color-cyan-900: #0c525c;
+
+  --color-blue-100: #c7d6ff;
+  --color-blue-300: #7fa0ff;
+  --color-blue-500: #2e6bff;
+  --color-blue-700: #1b47b3;
+  --color-blue-900: #102c70;
+
+  /* Accent — premium highlight pair */
+  --color-magenta-100: #f6c6de;
+  --color-magenta-300: #e87baf;
+  --color-magenta-500: #d6317a;
+  --color-magenta-700: #9c1f58;
+  --color-magenta-900: #611236;
+
+  --color-gold-100: #f3e3b8;
+  --color-gold-300: #e8c877;
+  --color-gold-500: #c9a24b;
+  --color-gold-700: #9c7a2e;
+  --color-gold-900: #6b5220;
+  --gradient-gold: linear-gradient(
+    135deg,
+    var(--color-gold-100) 0%,
+    var(--color-gold-500) 45%,
+    var(--color-gold-700) 100%
+  );
+  --gradient-cyan-blue: linear-gradient(
+    135deg,
+    var(--color-cyan-500) 0%,
+    var(--color-blue-500) 100%
+  );
+
+  /* Institutional — dark green (corporate badge field; badge contexts only) */
+  --color-green-500: #123d2b;
+  --color-green-700: #0b2a1d;
+  --color-green-900: #061a12;
+
+  /* Functional */
+  --color-success: #2e7d4f;
+  --color-warning: #c9a24b;
+  --color-danger: #8c2f2f;
+  --color-overlay: rgba(10, 10, 11, 0.72);
+
+  /* Typography */
+  --font-display: "Marcellus", "Playfair Display", serif;
+  --font-body: "Inter", "Neue Haas Grotesk", -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "IBM Plex Mono", monospace;
+
+  /* Tracking */
+  --tracking-tight: -0.02em;
+  --tracking-wide: 0.08em;
+  --tracking-widest: 0.24em;
+
+  /* Spacing */
+  --section-padding-mobile: 5rem;
+  --section-padding-desktop: 8rem;
+  --container-max: 1440px;
+  --container-padding-mobile: 1.25rem;
+  --container-padding-desktop: 3rem;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+  --shadow-gold: 0 0 32px rgba(201, 162, 75, 0.25);
+  --shadow-cyan: 0 0 32px rgba(34, 211, 232, 0.2);
+  --shadow-magenta: 0 0 32px rgba(214, 49, 122, 0.2);
+
+  /* Layered background system */
+  --bg-noise-opacity: 0.035;
+  --bg-glow-opacity: 0.16;
+
+  /* Glass */
+  --glass-navbar: rgba(10, 10, 11, 0.55);
+  --glass-card: rgba(22, 23, 26, 0.6);
+  --glass-border: rgba(246, 246, 244, 0.08);
+  --glass-blur: 16px;
+
+  /* Motion */
+  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-enter: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-exit: cubic-bezier(0.7, 0, 0.84, 0);
+  --duration-instant: 0.15s;
+  --duration-fast: 0.3s;
+  --duration-base: 0.6s;
+  --duration-slow: 1s;
+  --duration-cinematic: 1.6s;
+
+  /* Z-index */
+  --z-canvas: 10;
+  --z-content: 20;
+  --z-navbar: 50;
+  --z-overlay: 80;
+  --z-loader: 100;
+  --z-modal: 110;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0.01s;
+    --duration-fast: 0.01s;
+    --duration-base: 0.01s;
+    --duration-slow: 0.01s;
+    --duration-cinematic: 0.01s;
+  }
+}
