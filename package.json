@@ -1,0 +1,48 @@
+{
+  "name": "ibex-vehicle-restoration",
+  "version": "0.1.0-phase1",
+  "private": true,
+  "description": "IBEX VEHICLE RESTORATION (PRIVATE) LIMITED — enterprise website foundation",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^16.0.7",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "gsap": "^3.12.7",
+    "framer-motion": "^11.11.17",
+    "recharts": "^2.15.0",
+    "three": "^0.182.0",
+    "@react-three/fiber": "^9.6.1",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/postprocessing": "^3.0.4",
+    "postprocessing": "^6.36.6",
+    "@studio-freight/lenis": "^1.0.42",
+    "react-icons": "^5.3.0",
+    "lucide-react": "^0.462.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "@types/node": "^22.9.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.182.0",
+    "tailwindcss": "^3.4.14",
+    "postcss": "^8.4.47",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.14.0",
+    "eslint-config-next": "^16.0.7",
+    "@eslint/eslintrc": "^3.2.0",
+    "baseline-browser-mapping": "latest"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
